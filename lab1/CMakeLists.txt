@@ -9,9 +9,11 @@ add_executable(run_set_tests set/tests/tests.cpp)
 # Add executable for later tests
 # add_executable(name files)
 # Main CLI executable
-add_executable(cli cli.cpp)
+add_executable(cli cli.cpp)#pragma once
+
 
 # Find and Link UnitTest++ 
 find_package(UnitTest++ REQUIRED)
 
 target_link_libraries(run_set_tests PRIVATE Set UnitTest++)
+target_link_libraries(cli PRIVATE Set)
