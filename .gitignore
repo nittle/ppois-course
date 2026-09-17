@@ -70,3 +70,6 @@ Testing/
 # code editor folders
 .vscode/
 .vs
+
+# document files (can be regenerated using doxygen)
+docs/

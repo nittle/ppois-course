@@ -1,10 +1,21 @@
+/**
+ * @file set.cpp
+ * @brief Implementation of the Set class.
+ */
+
 #include "set.h"
 
 #include <algorithm>
 
+// Default constructor: creates an empty set.
 Set::Set() {}
+
+// Private constructor: copies the elements of the given container.
 Set::Set(SetType initial_set) : _objects(initial_set) {}
 
+// Parses the string: strips the outer braces, splits the content on
+// top-level commas and canonicalizes every token. Tokens wrapped in
+// braces are parsed recursively as nested sets.
 Set::Set(const std::string& str) {
     std::string inner = trim(str);
 
@@ -21,6 +32,7 @@ Set::Set(const std::string& str) {
     }
 }
 
+// Removes leading and trailing whitespace from a string.
 std::string Set::trim(const std::string& s) {
     const char* whitespace = " \t\n\r\f\v";
     size_t start = s.find_first_not_of(whitespace);
@@ -31,6 +43,9 @@ std::string Set::trim(const std::string& s) {
     return s.substr(start, end - start + 1);
 }
 
+// Splits a string by commas that are at the top nesting level.
+// Commas inside braces are kept as part of the current token, so
+// nested sets are not split.
 std::vector<std::string> Set::split_top_level(const std::string& s) {
     std::vector<std::string> tokens;
     std::string current;
@@ -55,11 +70,11 @@ std::vector<std::string> Set::split_top_level(const std::string& s) {
     return tokens;
 }
 
+// An element wrapped in braces is itself a set: parse and re-serialize it
+// so that logically equal sets get the same representation.
 std::string Set::canonicalize_element(const std::string& s) {
     std::string trimmed = trim(s);
 
-    // An element wrapped in braces is itself a set: parse and re-serialize it
-    // so that logically equal sets get the same representation.
     if (trimmed.size() >= 2 && trimmed.front() == '{' && trimmed.back() == '}') {
         Set nested(trimmed);
         return nested.to_canonical_string();
@@ -68,6 +83,8 @@ std::string Set::canonicalize_element(const std::string& s) {
     return trimmed;
 }
 
+// The elements are collected, sorted lexicographically and joined with
+// commas inside braces, e.g. "{a,b,{c}}".
 std::string Set::to_canonical_string() const {
     std::vector<std::string> elements(_objects.begin(), _objects.end());
     std::sort(elements.begin(), elements.end());
@@ -84,6 +101,8 @@ std::string Set::to_canonical_string() const {
     return result;
 }
 
+// The element is canonicalized first, so nested sets and plain elements
+// are stored in a uniform representation and duplicates are avoided.
 void Set::insert(ElementType element) {
     _objects.insert(canonicalize_element(element));
 }
@@ -100,6 +119,8 @@ int Set::cardinality() {
     return _objects.size();
 }
 
+// The queried element is canonicalized before lookup, so nested sets can
+// be queried in any equivalent spelling, e.g. "{a, b}" and "{b,a}".
 bool Set::contains(ElementType element) {
     return _objects.find(canonicalize_element(element)) != _objects.end();
 }
@@ -108,6 +129,8 @@ bool Set::operator[](ElementType element) {
     return contains(element);
 }
 
+// The result is a copy of this set extended with every element of the
+// other set that is not already present.
 Set Set::operator+(Set other) {
     SetType temp = _objects;
     for (const auto& el : other._objects) {
@@ -123,6 +146,8 @@ Set Set::operator+=(Set other) {
     return *this;
 }
 
+// Only the elements of this set that also belong to the other set
+// are kept in the result.
 Set Set::operator*(Set other) {
     SetType temp;
     for (const auto& el : _objects) {
@@ -132,6 +157,7 @@ Set Set::operator*(Set other) {
     return Set(temp);
 }
 
+// Every element that does not belong to the other set is erased.
 Set Set::operator*=(Set other) {
     for (auto it = _objects.begin(); it != _objects.end();) {
         if (!other.contains(*it))
@@ -142,6 +168,7 @@ Set Set::operator*=(Set other) {
     return *this;
 }
 
+// The result is a copy of this set with all elements of the other set removed.
 Set Set::operator-(Set other) {
     SetType temp = _objects;
     for (const auto& el : other._objects) {
@@ -181,6 +208,9 @@ Set::const_iterator Set::cend() const {
     return _objects.cend();
 }
 
+// Iterates over all 2^cardinality subsets: for each mask, the elements
+// corresponding to set bits are collected into a subset, which is then
+// stored in canonical string form in the result.
 Set Set::power_set() const {
     std::vector<ElementType> elements(_objects.begin(), _objects.end());
     size_t n = elements.size();
@@ -201,6 +231,9 @@ Set Set::power_set() const {
     return result;
 }
 
+// Prints the set in braces with elements separated by ", ". Nested sets
+// are recognized by their braces and printed recursively, so spacing is
+// inserted between their elements as well.
 std::ostream& operator<<(std::ostream& os, const Set& set) {
     os << '{';
 

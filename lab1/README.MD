@@ -14,3 +14,7 @@ The task is to describe a "Set" class. The class must implement the following ca
 - constructing the power set (the set of all subsets) of a given set.
 
 Describe an "Unordered Cantor Set" class (elements are not repeated and are unordered). The class must additionally support building a set from a string (for example, {a, b, c, {a, b}, {}, {a, {c}}}).
+
+## Usage
+
+Documents can be generated using `doxygen`, it requires doxygen to be installed. To generate, run `doxygen Doxyfile`.
