@@ -120,27 +120,27 @@ class Set {
      * @brief Checks whether the set is empty.
      * @return True if the set contains no elements, false otherwise.
      */
-    bool empty();
+    bool empty() const;
 
     /**
      * @brief Determines the cardinality (number of elements) of the set.
      * @return The number of elements in the set.
      */
-    int cardinality();
+    int cardinality() const;
 
     /**
      * @brief Checks whether an element belongs to the set.
      * @param element The element to look for.
      * @return True if the element is present, false otherwise.
      */
-    bool contains(ElementType element);
+    bool contains(ElementType element) const;
 
     /**
      * @brief Checks whether an element belongs to the set.
      * @param element The element to look for.
      * @return True if the element is present, false otherwise.
      */
-    bool operator[](ElementType element);
+    bool operator[](ElementType element) const;
 
     /**
      * @brief Returns the union of this set with another set.

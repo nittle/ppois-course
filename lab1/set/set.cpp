@@ -111,21 +111,21 @@ void Set::remove(ElementType element) {
     _objects.erase(canonicalize_element(element));
 }
 
-bool Set::empty() {
+bool Set::empty() const {
     return _objects.empty();
 }
 
-int Set::cardinality() {
+int Set::cardinality() const {
     return _objects.size();
 }
 
 // The queried element is canonicalized before lookup, so nested sets can
 // be queried in any equivalent spelling, e.g. "{a, b}" and "{b,a}".
-bool Set::contains(ElementType element) {
+bool Set::contains(ElementType element) const {
     return _objects.find(canonicalize_element(element)) != _objects.end();
 }
 
-bool Set::operator[](ElementType element) {
+bool Set::operator[](ElementType element) const {
     return contains(element);
 }
 
