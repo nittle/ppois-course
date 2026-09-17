@@ -8,6 +8,9 @@
  * representation such as "{a, b, {c, d}}".
  */
 
+#ifndef SET_H
+#define SET_H
+
 #include <iterator>
 #include <ostream>
 #include <string>
@@ -249,3 +252,5 @@ class Set {
  * @return The output stream, for chaining.
  */
 std::ostream& operator<<(std::ostream& os, const Set& set);
+
+#endif
