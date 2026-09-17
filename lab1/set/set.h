@@ -2,6 +2,7 @@
 #include <ostream>
 #include <string>
 #include <unordered_set>
+#include <vector>
 
 class Set {
     private:
@@ -13,12 +14,27 @@ class Set {
 
     // Constructs a Set with initial elements provided in the parameter
     Set(SetType initial_set);
+
+    // Splits a string by commas, respecting nested braces
+    static std::vector<std::string> split_top_level(const std::string& s);
+
+    // Trims leading and trailing whitespace from a string
+    static std::string trim(const std::string& s);
+
+    // Canonicalizes an element: if it looks like a set "{...}",
+    // parse it into a Set and re-serialize it in canonical form.
+    static std::string canonicalize_element(const std::string& s);
+
+    // Returns the canonical string form of this set, e.g. "{a,b,{c}}"
+    std::string to_canonical_string() const;
+
     public:
     using iterator = SetType::iterator;
     using const_iterator = SetType::const_iterator;
 
     Set();
-    // TODO: an element of the set may itself be another set;
+    // Constructs a Set from a string representation, e.g. "{a, b, {c, d}}"
+    Set(const std::string& str);
 
     // Adds an element to the Set
     void insert(ElementType element);
@@ -61,7 +77,8 @@ class Set {
     const_iterator cbegin() const;
     const_iterator cend() const;
 
-    // TODO: constructing the power set (the set of all subsets) of a given set.
+    // Returns the power set (the set of all subsets) of this set
+    Set power_set() const;
 
 
 
