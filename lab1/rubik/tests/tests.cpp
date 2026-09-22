@@ -3,6 +3,7 @@
 #include <UnitTest++/TestMacros.h>
 #include <UnitTest++/TestRunner.h>
 #include <cstdio>
+#include <filesystem>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -198,7 +199,9 @@ SUITE(RubikCubeTest) {
 
     // An arrangement can be loaded from a file
     TEST(LoadFromFile) {
-        const char* path = "/tmp/opencode/rubik_state_test.txt";
+        const std::filesystem::path dir = std::filesystem::temp_directory_path();
+        std::filesystem::create_directories(dir);  // ensure the temp dir exists
+        const std::filesystem::path path = dir / "rubik_state_test.txt";
 
         RubikCube cube(321);
         std::ostringstream os;
@@ -209,10 +212,10 @@ SUITE(RubikCubeTest) {
         }
 
         RubikCube loaded;
-        CHECK(loaded.load_from_file(path));
+        CHECK(loaded.load_from_file(path.string()));
         CHECK(cubes_equal(cube, loaded));
 
-        std::remove(path);
+        std::filesystem::remove(path);
     }
 
     // Loading from a missing file fails
