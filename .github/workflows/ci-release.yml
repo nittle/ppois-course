@@ -1,0 +1,53 @@
+name: CMake CI & Release
+
+on:
+  push:
+    branches: ["main"]
+    tags: ["release_lab*"]
+  pull_request:
+    branches: ["main"]
+
+permissions:
+  contents: write
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: ./lab1
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Install Dependencies
+      run: |
+        sudo apt-get update
+        sudo apt-get install -y libunittest++-dev
+
+    - name: Configure CMake
+      run: cmake -B build
+
+    - name: Build All Targets
+      run: cmake --build build --target cli run_set_tests run_rubik_tests --config Release
+
+    - name: Run All Tests
+      run: ctest --test-dir build --output-on-failure -C Release
+
+    - name: Package Release Binary
+      if: startsWith(github.ref, 'refs/tags/')
+      run: |
+        # Packages only the main CLI Binary
+        tar -czvf lab1-cli-${{ github.ref_name }}-linux.tar.gz -C build cli
+    
+    - name: Publsih GitHub Release
+      if: startsWith(github.ref, 'refs/tags/')
+      uses: softprops/action-gh-release@v2
+      with:
+        files: |
+          **/lab1-cli-*.tar.gz
+        generate_release_notes: true
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
